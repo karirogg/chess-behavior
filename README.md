@@ -12,7 +12,7 @@
 
 - [] Setja upp beinagrind að líkani (E2E) með einföldu líkani í torch lightning
   - [] Carlsen/ekki Carlsen
-  - [] k-shot pipeline
+  - [x] k-shot pipeline
 - [] Tengja líkanið við WandB
 - [] Fá líkanið til þess að læra
   - [] ResNet í conv skrefi
