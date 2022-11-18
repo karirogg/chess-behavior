@@ -46,7 +46,7 @@ def get_concat_k_moves(dir, k = 5, max_games = 100000):
 
     for game_file in os.listdir(dir):
         path = f'./{dir}/{game_file}'
-        new_df = get_first_k_moves(use_username = False, path = path, max_games = max_games)
+        new_df = get_first_k_moves(use_username = False, path = path, k = k, max_games = max_games)
         list_of_df.append(new_df)
     return pd.concat(list_of_df)
 
@@ -80,64 +80,19 @@ def df_to_numpy(df):
 
 import pickle
 
-def generate_X_y(dir, max_games):
-    df = get_concat_k_moves(dir, 20, max_games)#, target_date = '2012')
-    #print(df.shape)
-    X,y = df_to_numpy(df)
+dir = input("Enter directory name: ")
+max_games = int(input("Enter max number of games: "))
 
-    filename = 'X.dat'
-    outfile = open(filename,'wb')
-    pickle.dump(X,outfile)
-    outfile.close()
-    
-    filename = 'y.dat'
-    outfile = open(filename,'wb')
-    pickle.dump(y,outfile)
-    outfile.close()
-    
-    return X,y
+df = get_concat_k_moves(dir, 20, max_games)
 
-def get_n_most_frequent_players(y, n = 100):
-    all_occurances = np.concatenate([y[:,0], y[:,2]])
-    counts = np.bincount(all_occurances)
-    most_freq = np.argpartition(counts, -n)[-n:]
-    return most_freq
+X,y = df_to_numpy(df)
 
-def get_players_with_n_games(y, n = 100):
-    all_occurances = np.concatenate([y[:,0], y[:,2]])
-    counts = np.bincount(all_occurances)
-    legal_players = np.where(counts >= n)
-    return legal_players
+filename = f'X_{dir}_{max_games}.dat'
+outfile = open(filename,'wb')
+pickle.dump(X,outfile)
+outfile.close()
 
-from sklearn.model_selection import train_test_split
-def get_all_splits(X, y):
-    most_freq = get_n_most_frequent_players(y, 100)
-
-    most_played_inds = np.logical_or(y[:,0].isin(most_freq), y[:,2].isin(most_freq))
-    X_most_played = X[most_played_inds]
-    y_most_played = y[most_played_inds] # leikir þeirra sem spila mest
-
-    X_rest = X[np.logical_not(most_played_inds)] # hinir leikirnir
-    y_rest = y[np.logical_not(most_played_inds)]
-
-    # KR rage-ar út í þetta
-    X_temp, X_test, y_temp, y_test = train_test_split(
-        X_most_played, y_most_played, test_size = 0.2, random_state = 2)
-    X_train, X_val, y_train, y_val = train_test_split(
-        X_temp, y_temp, test_size = 0.125, random_state = 2) # 70 % train, 10 % val, 20 % test
-
-    # Finnur leikmenn sem hafa n leiki
-    inds_for_embeds = get_players_with_n_games(y_rest) # Take these from the train and validation sets
-
-    X_train_for_embeds = X_rest[inds_for_embeds]
-    y_train_for_embeds = y_rest[inds_for_embeds]
-
-    return X_train, y_train, X_val, y_val, ...
-
-
-dir = input("Enter directory to read data: ")
-max_games = int(input("Enter the max number of games per file you want to read: "))
-X, y = generate_X_y(dir = dir, max_games = max_games)
-print(X, y)
-print(X.shape, y.shape)
-
+filename = f'y_{dir}_{max_games}.dat'
+outfile = open(filename,'wb')
+pickle.dump(y,outfile)
+outfile.close()

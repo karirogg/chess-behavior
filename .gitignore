@@ -1,5 +1,7 @@
 .DS_store
+.DS_Store
 .ipynb_checkpoints
 elite_data
 2021_data
-
+2019_data
+*.dat
