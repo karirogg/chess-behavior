@@ -26,18 +26,37 @@ def get_embed_data(X, y, players, k):
     test_inds = []
 
     for player in tqdm(players):
-        player_games_inds = np.logical_or(y[:,0] == player, y[:,2] == player)
+        player_white_games_inds = y[:,0] == player
+        player_black_games_inds = y[:,2] == player
 
-        seen_test_inds = np.random.choice(np.arange(len(y))[player_games_inds], 2*k, replace = False)
-        test_inds.append(seen_test_inds)
+        seen_test_inds = np.random.choice(np.arange(2*len(y))[np.concatenate([player_white_games_inds, player_black_games_inds])], 2*k, replace = False)
 
-        X_for_embeds_list.append(X[seen_test_inds[:k]])
-        y_for_embeds_list.append(y[seen_test_inds[:k]])
+        inds_for_embeds = seen_test_inds[:k]
+        inds_for_test = seen_test_inds[k:]
 
-        X_test_list.append(X[seen_test_inds[k:]])
-        y_test_list.append(y[seen_test_inds[k:]])
+        seen_embed_inds_white = inds_for_embeds[inds_for_embeds < len(player_white_games_inds)]
+        seen_embed_inds_black = inds_for_embeds[inds_for_embeds >= len(player_white_games_inds)] - len(player_white_games_inds)
 
-    # delete player games from the seen train set
+        seen_test_inds_white = inds_for_test[inds_for_test < len(player_white_games_inds)]
+        seen_test_inds_black = inds_for_test[inds_for_test >= len(player_white_games_inds)] - len(player_white_games_inds)
+
+        X_for_embeds_list.append(np.concatenate((X[seen_embed_inds_white], X[seen_embed_inds_black]), axis = 0))
+        y_for_embeds_list.append(np.concatenate((y[seen_embed_inds_white, 0], y[seen_embed_inds_black, 2]), axis = 0))
+
+        X_test_list.append(np.concatenate((X[seen_test_inds_white], X[seen_test_inds_black]), axis = 0))
+        y_test_list.append(np.concatenate((y[seen_test_inds_white, 0], y[seen_test_inds_black, 2]), axis = 0))
+        
+        test_inds.append(np.concatenate((seen_embed_inds_white, seen_embed_inds_black, seen_test_inds_white, seen_test_inds_black)))
+
+        # X_for_embeds_list.append(X[seen_test_inds])
+
+        # X_for_embeds_list.append(X[seen_test_inds[:k]])
+        # y_for_embeds_list.append(y[seen_test_inds[:k]])
+
+        # X_test_list.append(X[seen_test_inds[k:]])
+        # y_test_list.append(y[seen_test_inds[k:]])
+
+    # delete games used for test/embeddings from the seen train set
     X = np.delete(X, np.unique(np.concatenate(test_inds)), axis = 0)
     y = np.delete(y, np.unique(np.concatenate(test_inds)), axis = 0)
 
@@ -70,7 +89,7 @@ def get_all_splits(X, y, k = 50):
     X_unseen = X_rest[unseen_inds]
     y_unseen = y_rest[unseen_inds]
 
-    _, _, X_unseen_for_embeds, y_unseen_for_embeds, X_unseen_test, y_unseen_test = get_embed_data(X_unseen, y_unseen, unseen_players, k)    
+    _, _, X_unseen_for_embeds, y_unseen_for_embeds, X_unseen_test, y_unseen_test = get_embed_data(X_unseen, y_unseen, unseen_players, k)  
 
     return seen_players, unseen_players, X_seen_train, y_seen_train, X_seen_val, y_seen_val, X_seen_for_embeds, y_seen_for_embeds, X_seen_test, y_seen_test, X_unseen_for_embeds, y_unseen_for_embeds, X_unseen_test, y_unseen_test
 
@@ -86,7 +105,7 @@ print(X.shape)
 # seen_players, unseen_players, X_seen_train, y_seen_train, X_seen_val, y_seen_val, X_seen_for_embeds, y_seen_for_embeds, X_seen_test, y_seen_test, X_unseen_for_embeds, y_unseen_for_embeds, X_unseen_test, y_unseen_test
 player_data = get_all_splits(X,y, k = k)
 
-filename = 'training_data.dat'
+filename = f'training_data_{dir}_{max_games}_{k}2.dat'
 outfile = open(filename,'wb')
 pickle.dump(player_data,outfile)
 outfile.close()
