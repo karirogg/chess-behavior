@@ -41,30 +41,28 @@ def get_embed_data(X, y, players, k):
         seen_test_inds_black = inds_for_test[inds_for_test >= len(player_white_games_inds)] - len(player_white_games_inds)
 
         X_for_embeds_list.append(np.concatenate((X[seen_embed_inds_white], X[seen_embed_inds_black]), axis = 0))
-        y_for_embeds_list.append(np.concatenate((y[seen_embed_inds_white, 0], y[seen_embed_inds_black, 2]), axis = 0))
+        
+        y_white_for_embeds = np.stack((y[seen_embed_inds_white, 0], np.ones(len(y[seen_embed_inds_white, 1]), dtype = int)), axis = 1)
+        y_black_for_embeds = np.stack((y[seen_embed_inds_black, 2], np.zeros(len(y[seen_embed_inds_black, 1]), dtype = int)), axis = 1)
+        y_for_embeds_list.append(np.concatenate((y_white_for_embeds, y_black_for_embeds), axis = 0))
 
         X_test_list.append(np.concatenate((X[seen_test_inds_white], X[seen_test_inds_black]), axis = 0))
-        y_test_list.append(np.concatenate((y[seen_test_inds_white, 0], y[seen_test_inds_black, 2]), axis = 0))
+
+        y_white_test = np.stack((y[seen_test_inds_white, 0], np.ones(len(y[seen_test_inds_white, 1]))), axis = 1)
+        y_black_test = np.stack((y[seen_test_inds_black, 2], np.zeros(len(y[seen_test_inds_black, 1]))), axis = 1)
+        y_test_list.append(np.concatenate((y_white_test, y_black_test), axis = 0))
         
         test_inds.append(np.concatenate((seen_embed_inds_white, seen_embed_inds_black, seen_test_inds_white, seen_test_inds_black)))
-
-        # X_for_embeds_list.append(X[seen_test_inds])
-
-        # X_for_embeds_list.append(X[seen_test_inds[:k]])
-        # y_for_embeds_list.append(y[seen_test_inds[:k]])
-
-        # X_test_list.append(X[seen_test_inds[k:]])
-        # y_test_list.append(y[seen_test_inds[k:]])
 
     # delete games used for test/embeddings from the seen train set
     X = np.delete(X, np.unique(np.concatenate(test_inds)), axis = 0)
     y = np.delete(y, np.unique(np.concatenate(test_inds)), axis = 0)
 
     X_for_embeds = np.concatenate(X_for_embeds_list, axis = 0)
-    y_for_embeds = np.concatenate(y_for_embeds_list, axis = 0)
+    y_for_embeds = np.array(np.concatenate(y_for_embeds_list, axis = 0), dtype = int)
 
     X_test = np.concatenate(X_test_list, axis = 0)
-    y_test = np.concatenate(y_test_list, axis = 0)
+    y_test = np.array(np.concatenate(y_test_list, axis = 0), dtype = int)
 
     return X, y, X_for_embeds, y_for_embeds, X_test, y_test
 
@@ -100,12 +98,10 @@ k = int(input("Enter k (k-shot learning): "))
 X = pickle.load(open(f'X_{dir}_{max_games}.dat','rb'))
 y = pickle.load(open(f'y_{dir}_{max_games}.dat','rb'))
 
-print(X.shape)
-
 # seen_players, unseen_players, X_seen_train, y_seen_train, X_seen_val, y_seen_val, X_seen_for_embeds, y_seen_for_embeds, X_seen_test, y_seen_test, X_unseen_for_embeds, y_unseen_for_embeds, X_unseen_test, y_unseen_test
-player_data = get_all_splits(X,y, k = k)
+player_data = get_all_splits(X,np.array(y, dtype = int), k = k)
 
-filename = f'training_data_{dir}_{max_games}_{k}2.dat'
+filename = f'training_data_{dir}_{max_games}_{k}.dat'
 outfile = open(filename,'wb')
 pickle.dump(player_data,outfile)
 outfile.close()
