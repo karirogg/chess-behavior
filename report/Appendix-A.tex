@@ -1,6 +1,0 @@
-\section*{Appendix - Failed Attempts}
-During the process of creating the model, there were a few failed attempts. While we were waiting on the dataset, we trained a binary classification convolutional LSTM model similar to the final model, on data from Magnus Carlsen. We were not able to get accuracy much higher than 50\% on classifying if a chess game is played by Carlsen or not. This is probably since there were many thousands of players in the dataset, and we only labeled them as ,,Not Carlsen'', so there was not much pattern to the players that were not Carlsen.
-\medskip\par
-Another failed attempt was to introduce so-called squeeze-and-excitation blocks to the residual CNN in the convolutional LSTM model. These blocks are used in the architecture we were inspired by, Maia (\citealp{maia}). When we introduced them to the model, the model performed worse.
-\medskip\par
-One final mistake that we realized the day before we had the presentation was that we in the beginning, we used Euclidean distance for model inference, but the model was trained on cosine similarity. Using cosine similarity gave a slight improvement over the Euclidean distance, but the gain was not large.
