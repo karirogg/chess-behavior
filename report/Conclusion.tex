@@ -1,0 +1,18 @@
+\newpage
+\section{Conclusions}
+The goal of this project was to repeat the experiments made by \cite{main_article}, to accurately predict, from a sequence of chess moves, who is playing with the white pieces and who is playing with the black pieces. With the limited available computing power a student has, we were able to predict with around 13\% accuracy who is playing out of a 400 player pool of players the model had seen before. It achieved almost 3\% accuracy on unseen players out of a just over 2000 player pool of players the model has not seen at training time, resulting to accuracy over 50 times better than guessing at random and a considerably better accuracy than a baseline model. In comparison to the results in the appendix of \cite{main_article}, our baseline accuracy was significantly lower, and our LSTM model slightly worse as well. However, they seem to have had access to a considerable amount of computing power.
+\medskip\par 
+It is important to validate research performed by professionals. After performing this study, we question some of the results achieved in \cite{main_article}. Most notably the results stated in chapter 7.7 in the appendix. They achieve above 60\% accuracy in classifying between over 1600 players, with their baseline model.
+This is on a dataset that is similar to ours. Our baseline model uses the excact same principles, fitting methods and evaluation methods but only achieves at most 4\% accuracy.
+
+\subsection{Future work}
+\subsubsection{Computational Power}
+Our work was limited by our computational power. The amount of data we had was more than enough to be able to create models with very high accuracy. However our limited computational resources severly limited our ability to train these models quickly.
+We trained our final models for over 6 hours, the loss was still decreasing when we stopped the training.
+We believe that training for a longer time and/or training faster with better resources would results in a better overall model.
+\subsubsection{Cheat Detection}
+Our secondary goal was to use these embeddings to detect cheaters in chess purely based on how they play. Due to time limitations we were unable to complete this secondary goal. However, we have a strategy of how to achieve this. 
+\medskip\par
+We would get data of chess engines playing many chess games and train the model with the engines and regular players. Having players that are known to have cheated will also help. Then we can compare the unseen players' embeddings and how close they are to the chess engines or known cheaters. Then a simple threshold hyper-parameter to the closeness of the embeddings can be tuned and a model is created.
+\subsubsection{ELO Rating Prediction}
+We have data on each players' ELO rating at the time they played each game. An idea we had was to be able to predict the players' ELO rating from the moves. We then switch from a classification problem to an regression problem on the outputs. We could still use the convolutional model for move embeddings as a starting point, We would however need to change the final stages of the model and to get this to work.

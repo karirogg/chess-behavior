@@ -1,0 +1,70 @@
+\documentclass{article}
+\input{preamble}
+
+\pagenumbering{arabic}
+\begin{document}
+
+\begin{titlepage}
+
+\setcounter{page}{1}
+\newgeometry{lmargin=0cm, rmargin=0cm, tmargin=0cm, bmargin=0cm}
+\begin{center}
+% \includegraphics[width=\textwidth]{figures/hi_logo.jpg}
+\begin{tikzpicture} [overlay,remember picture]
+    \draw [fill=hi_color] 
+        ($ (current page.north west)$)
+        rectangle
+        ($ (current page.north east) + (0cm, -6cm) $);
+
+    \draw [fill=hi_color] 
+        ($ (current page.south west)$)
+        rectangle
+        ($ (current page.south east) + (0cm, 1cm) $);
+\end{tikzpicture}
+\null
+\vspace{0.45cm}
+\begin{center}
+    \includegraphics[height=4cm]{figures/hi_logo_new.pdf}
+\end{center}
+
+{\vspace{4cm} \huge\bf
+Who Is Playing?\\\vspace{12pt}
+\par}
+{\vspace{0.5cm}
+\Large\bf
+A Study of Chess Behavior\par}
+
+{\vspace{1 cm} \Large
+Introduction to Deep Neural Networks $\sim$ TÖL506M}
+
+
+{\vspace{18pt} \Large 
+Arnar Ágúst Kristjánsson (aak18@hi.is)\\
+Jason Andri Gíslason (jag28@hi.is)\\
+Kári Rögnvaldsson (kar26@hi.is)
+\par}
+
+{\vspace{6 cm}\Large 
+Instructor: Steinn Guðmundsson \\
+\today
+\par}
+\vspace{1cm}
+\includegraphics[scale = 0.5]{figures/von_logo.pdf}
+\end{center}
+\end{titlepage}
+\tableofcontents
+\input{Abstract}
+\input{Introduction}
+\input{Methods}
+\input{Results}
+\input{Conclusion}
+\newpage
+\thispagestyle{empty}
+\bibliographystyle{apalike}
+\bibliography{bibtex}
+\newpage
+\input{Appendix-A}
+\newpage
+% \input{Code}
+
+\end{document}
